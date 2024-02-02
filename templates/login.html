@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            background-color: #282c34; /* Fundo escuro */
+            color: #61dafb; /* Cor do texto azul claro */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h2 {
+            color: #61dafb; /* Cor do texto azul claro */
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #333; /* Cor de fundo do formulário */
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #61dafb; /* Cor do texto azul claro */
+        }
+
+        input {
+            margin-bottom: 16px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50; /* Cor verde para o botão */
+            color: #fff; /* Cor do texto branco */
+            cursor: pointer;
+        }
+
+        p {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #fff; /* Cor do texto branco */
+        }
+
+        .copygrith {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666; /* Cor cinza para a mensagem de direitos autorais */
+        }
+    </style>
+</head>
+<body>
+    <form action="{{ url_for('login') }}" method="post">
+        <h2>Sussuradores</h2>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        <label for="username">Nome de Usuário:</label>
+        <input type="text" name="username" required><br>
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Secreto - Sala {{ room_id }}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #212121; /* Fundo escuro */
+            color: #fff; /* Cor do texto */
+            font-family: 'Arial', sans-serif; /* Fonte padrão */
+        }
+
+        #header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #333; /* Cor de fundo do cabeçalho */
+            border-radius: 0 0 10px 10px;
+        }
+
+        #user-info {
+            font-size: 1.2em;
+            margin-left: 10px;
+            color: #4CAF50; /* Cor verde para o nome do usuário */
+            font-weight: bold;
+        }
+
+        #chat-container {
+            max-width: 400px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            background-color: #2c2c2c; /* Cor de fundo mais escura */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #chat-header {
+            text-align: center;
+            font-size: 1.5em;
+            padding: 10px;
+            background-color: #333; /* Cor de fundo do cabeçalho */
+            color: #fff;
+            margin: 0;
+            border-radius: 10px 10px 0 0;
+        }
+
+        #room-id-container {
+            text-align: center;
+            background-color: #333; /* Cor de fundo do ID da sala */
+            color: #fff;
+            border: 1px solid #555; /* Cor da borda do ID da sala */
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none; /* Inicialmente oculto */
+        }
+
+        #share-room-id {
+            position: absolute;
+            top: 10px;
+            right: 10px; /* Ajuste para o canto superior direito */
+            cursor: pointer;
+            background-color: #333; /* Cor do botão mais escura */
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        #copy-room-id {
+            position: absolute;
+            top: 10px;
+            right: 80px; /* Ajuste para o canto superior direito */
+            cursor: pointer;
+            background-color: #333; /* Cor do botão mais escura */
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: none; /* Inicialmente oculto */
+        }
+
+        #share-room-id-modal {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; /* Inicialmente oculto */
+        }
+
+        #share-room-id-modal-content {
+            background-color: #333; /* Cor de fundo do modal */
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #close-share-room-id-modal {
+            background-color: #ff4500; /* Laranja escuro */
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #message-container {
+            list-style: none;
+            padding: 0;
+            max-height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-top: 50px; /* Ajuste para evitar sobreposição com o código da sala */
+            scroll-behavior: smooth; /* Rola suavemente para novas mensagens */
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            opacity: 0; /* Inicialmente invisível para a animação de entrada */
+            transform: translateY(20px); /* Desloca para baixo para a animação de entrada */
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .message.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .my-message {
+            background-color: #4CAF50; /* Verde para mensagens próprias */
+            color: #fff;
+            align-self: flex-end;
+        }
+
+        .other-message {
+            background-color: #333; /* Cor de fundo para mensagens recebidas */
+            color: #fff;
+            align-self: flex-start;
+        }
+
+        #message-form {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            background-color: #333; /* Cor de fundo do formulário de mensagem */
+        }
+
+        #message-input {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #send-button {
+            background-color: #4CAF50; /* Verde para o botão de enviar */
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #close-room {
+            background-color: #ff4500; /* Laranja escuro para o botão de fechar sala */
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px; /* Ajuste para o canto superior direito */
+        }
+
+        .send-icon {
+            margin-left: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="header-container">
+        <div id="user-info">
+            {% if 'username' in session %}
+                {{ session['username'] }}
+            {% else %}
+                Anônimo
+            {% endif %}
+        </div>
+        <button id="share-room-id" onclick="shareRoomId()">Compartilhar Código</button>
+        <button id="copy-room-id" onclick="copyRoomId()">Copiar Código</button>
+    </div>
+
+    <div id="chat-container">
+        <div id="chat-header">Sussurro</div>
+        <div id="room-id-container">
+            <p>Código da Sala: {{ room_id }}</p>
+        </div>
+        <ul id="message-container" class="message-container">
+            {% for message in messages %}
+                <li class="message {% if message.username == session['username'] %}my-message{% else %}other-message{% endif %} visible">
+                    {% if message.username != session['username'] %}
+                        <div class="username-label">
+                            {{ message.username }}:
+                        </div>
+                    {% endif %}
+                    <div>
+                        {{ message.content }}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <form id="message-form" action="{{ url_for('submit_message', room_id=room_id) }}" method="post">
+            {% if 'username' in session %}
+                <input type="hidden" name="username" value="{{ session['username'] }}">
+            {% endif %}
+            <label for="message">Mensagem:</label>
+            <input type="text" name="message" id="message-input" required>
+
+            <button type="submit" id="send-button">
+                Enviar
+                <span class="send-icon">➤</span>
+            </button>
+        </form>
+        <button id="close-room" onclick="closeRoom()">Fechar Sala</button>
+    </div>
+
+    <div id="share-room-id-modal">
+        <div id="share-room-id-modal-content">
+            <p>Copie o código da sala:</p>
+            <input type="text" value="{{ room_id }}" readonly>
+            <button id="close-share-room-id-modal" onclick="closeShareRoomIdModal()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        const messages = document.querySelectorAll('.message');
+        messages.forEach((message) => {
+            message.classList.add('visible');
+        });
+
+        document.getElementById('message-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                document.getElementById('send-button').click();
+            }
+        });
+
+        function shareRoomId() {
+            document.getElementById('share-room-id-modal').style.display = 'flex';
+        }
+
+        function closeShareRoomIdModal() {
+            document.getElementById('share-room-id-modal').style.display = 'none';
+        }
+
+        function closeRoom() {
+            const confirmClose = confirm('Tem certeza de que deseja fechar a sala? Isso apagará todas as mensagens.');
+            if (confirmClose) {
+                window.location.href = "{{ url_for('user_page') }}?close_room={{ room_id }}";
+            }
+        }
+
+        function copyRoomId() {
+            const roomIdInput = document.createElement('input');
+            roomIdInput.value = "{{ room_id }}";
+            document.body.appendChild(roomIdInput);
+            roomIdInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(roomIdInput);
+
+            const copyButton = document.getElementById('copy-room-id');
+            copyButton.innerText = 'Código Copiado!';
+            setTimeout(() => {
+                copyButton.innerText = 'Copiar Código';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

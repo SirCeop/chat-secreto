@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sussuradores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.5s;
+            background-color: #212121; /* Cor de fundo escura */
+            color: #61dafb; /* Cor do texto azul claro */
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7); /* Fundo escuro com transparência */
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-family: 'Anonymous Pro', monospace;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #4CAF50; /* Cor verde */
+        }
+
+        a {
+            color: #4CAF50; /* Cor verde para links */
+        }
+
+        p {
+            font-family: 'Anonymous Pro', monospace;
+            color: #fff; /* Cor do texto branco */
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .icon-box {
+            background-color: #212121; /* Cor de fundo do ícone */
+            color: #fff; /* Cor do ícone branco */
+            padding: 6.5px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        input {
+            margin-bottom: 16px;
+            padding: 8px 8px 8px 32px;
+            width: calc(100% - 8px);
+            box-sizing: border-box;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .icon {
+            font-size: 20px;
+        }
+
+        .copygrith {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666; /* Cor cinza para a mensagem de direitos autorais */
+        }
+
+        /* Botão para alternar o modo noturno */
+        .dark-mode-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #4CAF50; /* Cor verde para o botão */
+            color: #fff; /* Cor do ícone branco */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        body.dark-mode {
+            background-color: #fff; /* Cor de fundo para o modo noturno */
+            color: green; /* Cor do texto para o modo noturno */
+            /* Adicione outras propriedades de estilo para o modo noturno, se necessário */
+        }
+    </style>
+</head>
+<body class="{% if dark_mode %}dark-mode{% endif %}">
+    <button class="dark-mode-button" onclick="toggleDarkMode()">🌞</button>
+
+    <div class="container">
+        <h1>Bem-vindo aos Sussuradores</h1>
+        
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        
+        <form action="{{ url_for('login') }}" method="post">
+            <div class="input-group">
+                <div class="icon-box">
+                    <span class="icon">👤</span>
+                </div>
+                <input type="text" name="username" placeholder="Nome de Usuário" required>
+            </div>
+            <div class="input-group">
+                <div class="icon-box">
+                    <span class="icon">🔒</span>
+                </div>
+                <input type="password" name="password" placeholder="Senha" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}" title="A senha deve conter pelo menos 1 dígito, 1 letra maiúscula, 1 letra minúscula, 1 caractere especial e ter entre 8 e 16 caracteres">
+            </div>
+            <input type="submit" color="green" value="Entrar">
+        </form>
+
+        <p>Não tem cadastro? <a href="{{ url_for('signup') }}">Cadastrar Novo Usuário</a></p>
+    </div>
+
+    <div class="copygrith">
+        @ceop
+    </div>
+
+    <script>
+        // Função para alternar o modo noturno
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+    
+            // Adicione lógica personalizada aqui, se necessário
+            const isDarkMode = body.classList.contains('dark-mode');
+    
+            // Exemplo de lógica para ajustar outras propriedades durante a alternância de modo
+            if (isDarkMode) {
+                // Código para o modo noturno
+                document.querySelector('.dark-mode-button').innerHTML = '🌙';
+            } else {
+                // Código para o modo claro
+                document.querySelector('.dark-mode-button').innerHTML = '🌞';
+            }
+        }
+    </script>
+</body>
+</html>

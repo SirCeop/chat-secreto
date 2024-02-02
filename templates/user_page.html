@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página do Usuário</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h2 {
+            color: #00ff00;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+            color: #00ff00;
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #232323;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #009900;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <h2>Bem-vindo, {{ username }}!</h2>
+    
+    <!-- Links estilizados -->
+    <a href="{{ url_for('create_room') }}">Criar uma nova sala secreta</a>
+    <a href="{{ url_for('room') }}">Entrar em uma sala existente</a>
+    <a href="{{ url_for('index') }}">Sair</a>
+</body>
+</html>

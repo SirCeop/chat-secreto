@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <style>
+        body {
+            font-family: 'Anonymous Pro', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.5s;
+            background-color: #212121; /* Cor de fundo escura */
+            color: #4CAF50; /* Cor do texto verde */
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7); /* Fundo escuro com transparência */
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        a {
+            color: #4CAF50; /* Cor verde para links */
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #4CAF50; /* Cor verde */
+        }
+
+        p {
+            font-size: 17px;
+            margin-bottom: 15px;
+            color: #fff; /* Cor do texto branco */
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .icon-box {
+            background-color: #212121; /* Cor de fundo do ícone */
+            color: #4CAF50; /* Cor do ícone verde */
+            padding: 6.5px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        input {
+            margin-bottom: 16px;
+            padding: 8px 8px 8px 32px;
+            width: calc(100% - 8px);
+            box-sizing: border-box;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .dark-mode-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #4CAF50; /* Cor verde para o botão */
+            color: #fff; /* Cor do ícone branco */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        body.dark-mode {
+            background-color: #fff; /* Cor de fundo para o modo noturno */
+            color: #4CAF50; /* Cor do texto para o modo noturno */
+            /* Adicione outras propriedades de estilo para o modo noturno, se necessário */
+        }
+
+        .copygrith {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666; /* Cor cinza para a mensagem de direitos autorais */
+        }
+    </style>
+</head>
+<body class="{% if dark_mode %}dark-mode{% endif %}">
+    <button class="dark-mode-button" onclick="toggleDarkMode()">🌞</button>
+
+    <div class="container">
+        <h2>Seja um Sussurrador 🤫</h2>
+        <p>Já é um Sussurrador? <a href="{{ url_for('index') }}">Entrar</a></p>
+        
+        {% if user_exists_error %}
+            <p style="color: red;">{{ user_exists_error }}</p>
+        {% endif %}
+        
+        <form action="{{ url_for('signup') }}" method="post">
+            <div class="input-group">
+                <div class="icon-box">
+                    <span class="icon">👤</span>
+                </div>
+                <input type="text" name="username" placeholder="Nome de Usuário" required>
+            </div>
+
+            <div class="input-group">
+                <div class="icon-box">
+                    <span class="icon">🔒</span>
+                </div>
+                <input type="password" name="password" placeholder="Senha" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}" title="A senha deve conter pelo menos 1 dígito, 1 letra maiúscula, 1 letra minúscula, 1 caractere especial e ter entre 8 e 16 caracteres">
+            </div>
+
+            <div class="input-group">
+                <div class="icon-box">
+                    <span class="icon">🔒</span>
+                </div>
+                <input type="password" name="password_repeat" placeholder="Repetir Senha" required>
+            </div>
+
+            <input type="submit" value="Cadastrar">
+        </form>
+    </div>
+    <div class="copygrith">
+        @CEOP
+    </div>
+    <script>
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+    
+            const isDarkMode = body.classList.contains('dark-mode');
+    
+            if (isDarkMode) {
+                document.querySelector('.dark-mode-button').innerHTML = '🌙';
+            } else {
+                document.querySelector('.dark-mode-button').innerHTML = '🌞';
+            }
+        }
+    </script>
+</body>
+</html>
