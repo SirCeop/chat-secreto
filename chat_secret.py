@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
@@ -32,11 +32,6 @@ class Message(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 chat_rooms = {}
-
-with app.app_context():
-    db.drop_all()
-    db.create_all()
-    db.session.commit()
 
 @app.route('/')
 def index():
