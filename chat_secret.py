@@ -1,17 +1,21 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, redirect, url_for, session, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from datetime import datetime
-from dotenv import load_dotenv 
-import os 
+from dotenv import load_dotenv
+import os
 
-load_dotenv ()
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "token")
+app.secret_key = os.environ.get("SECRET_KEY", "chave_secreta_padrão")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SESSION_TYPE'] = 'sqlalchemy'
+app.config['SESSION_SQLALCHEMY'] = db
 db = SQLAlchemy(app)
+Session(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,9 +38,7 @@ class Message(db.Model):
 chat_rooms = {}
 
 with app.app_context():
-    db.drop_all()
     db.create_all()
-    db.session.commit()
 
 @app.route('/')
 def index():
@@ -107,27 +109,30 @@ def login():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        password_repeat = request.form.get('password_repeat')
+        try:
+            username = request.form.get('username')
+            password = request.form.get('password')
+            password_repeat = request.form.get('password_repeat')
 
-        if password != password_repeat:
-            return render_template('signup.html', user_exists_error='As senhas não coincidem.')
+            if password != password_repeat:
+                raise ValueError('As senhas não coincidem.')
 
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            return render_template('signup.html', user_exists_error='Nome de usuário já existe. Por favor, escolha outro.')
+            existing_user = User.query.filter_by(username=username).first()
+            if existing_user:
+                raise ValueError('Nome de usuário já existe. Por favor, escolha outro.')
 
-        new_user = User(username=username)
-        new_user.set_password(password)
-        db.session.add(new_user)
-        db.session.commit()
+            new_user = User(username=username)
+            new_user.set_password(password)
+            db.session.add(new_user)
+            db.session.commit()
 
-        session['username'] = username
-        return redirect(url_for('user_page'))
+            session['username'] = username
+            return redirect(url_for('user_page'))
+
+        except Exception as e:
+            return render_template('signup.html', user_exists_error=str(e))
 
     return render_template('signup.html', user_exists_error=None)
-
 
 @app.route('/user_page', methods=['GET', 'POST'])
 def user_page():
