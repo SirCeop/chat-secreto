@@ -10,7 +10,7 @@ Beaker==1.10.0
 beautifulsoup4==4.12.2
 blinker==1.7.0
 blivet==3.5.0
-blivet-gui==2.4.1
+blivet-gui
 Brlapi==0.8.4
 cached-property==1.5.2
 certifi==2021.10.8
@@ -126,5 +126,5 @@ urllib3==1.26.12
 uvicorn==0.21.1
 Werkzeug==3.0.1
 yarl==1.9.2
-Flask==2.0.1
+Flask==3.0.0
 guinicorn==20.1.0
