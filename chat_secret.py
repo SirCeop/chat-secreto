@@ -8,6 +8,8 @@ import os
 
 load_dotenv ()
 
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///site.db')
+
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "token")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
