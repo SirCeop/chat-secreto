@@ -146,6 +146,7 @@ def user_page():
 
     return render_template('user_page.html', username=username)
 
+
 @app.route('/room', methods=['GET', 'POST'])
 def room():
     if request.method == 'POST':
@@ -156,11 +157,12 @@ def room():
             room_id = str(uuid.uuid4())
             chat_rooms[room_id] = []
 
-            # Adicionar a sala ao banco de dados
+            new_message = Message(username=session ['username'], room_id=room_id, content= "Sala Criada.")
             new_room = Message(room_id=room_id, username=session['username'], content='Sala criada.')
             db.session.add(new_room)
             db.session.commit()
 
+            session.modified=True 
             return redirect(url_for('chat', room_id=room_id))
 
     return render_template('room.html')
