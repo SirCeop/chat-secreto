@@ -39,6 +39,7 @@ chat_rooms = {}
 
 with app.app_context():
     db.create_all()
+    db.session.commit()
 
 @app.route('/')
 def index():
@@ -141,10 +142,8 @@ def user_page():
 
     username = session['username']
 
-    # Verifica se há solicitação para fechar a sala
     close_room_id = request.args.get('close_room')
     if close_room_id:
-        # Remove todas as mensagens associadas à sala fechada
         Message.query.filter_by(room_id=close_room_id).delete()
         db.session.commit()
         return redirect(url_for('user_page'))
@@ -157,11 +156,9 @@ def room():
         sala_nome = request.form.get('sala')
 
         if sala_nome:
-            # Criar uma nova sala e redirecionar para ela
             room_id = str(uuid.uuid4())
             chat_rooms[room_id] = []
 
-            # Adicionar a sala ao banco de dados
             new_room = Message(room_id=room_id, username=session['username'], content='Sala criada.')
             db.session.add(new_room)
             db.session.commit()
