@@ -1,1 +1,1 @@
-web: guinicorn chat_secret: app
+web: guinicorn chatsecret: app
