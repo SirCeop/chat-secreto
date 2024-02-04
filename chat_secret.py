@@ -3,9 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from datetime import datetime
+from dotenv import load_dotenv 
+import os 
+
+load_dotenv ()
 
 app = Flask(__name__)
-app.secret_key = '@C4RL053DU4RD0'
+app.secret_key = os.getenv("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 
@@ -162,4 +166,4 @@ def room():
     return render_template('room.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
