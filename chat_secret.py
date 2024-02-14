@@ -33,11 +33,6 @@ class Message(db.Model):
 
 chat_rooms = {}
 
-with app.app_context():
-    db.drop_all()
-    db.create_all()
-    db.session.commit()
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -73,8 +68,6 @@ def chat(room_id):
 
 @app.route('/submit_message/<room_id>', methods=['POST'])
 def submit_message(room_id):
-    if room_id not in chat_rooms:
-        return redirect(url_for('index'))
 
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -131,9 +124,6 @@ def signup():
 
 @app.route('/user_page', methods=['GET', 'POST'])
 def user_page():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-
     username = session['username']
 
     # Verifica se há solicitação para fechar a sala
@@ -166,4 +156,4 @@ def room():
     return render_template('room.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)
