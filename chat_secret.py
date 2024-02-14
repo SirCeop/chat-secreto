@@ -40,7 +40,7 @@ def index():
 @app.route('/create_room')
 def create_room():
     if 'username' not in session:
-        return redirect(url_for('page_user'))
+        return redirect(url_for('login'))
 
     room_id = str(uuid.uuid4())
     chat_rooms[room_id] = []
@@ -49,10 +49,11 @@ def create_room():
 @app.route('/chat/<room_id>', methods=['GET', 'POST'])
 def chat(room_id):
     if room_id not in chat_rooms:
-        return (url_for('room.html'))
+        return redirect(url_for('room'))
+
     if request.method == 'POST':
         if 'username' not in session:
-            return redirect(url_for('user_page'))
+            return redirect(url_for('login'))
 
         username = session['username']
         message_content = request.form.get('message')
@@ -67,6 +68,11 @@ def chat(room_id):
 
 @app.route('/submit_message/<room_id>', methods=['POST'])
 def submit_message(room_id):
+    if room_id not in chat_rooms:
+        return redirect(url_for(''))
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
 
     username = session['username']
     message_content = request.form.get('message')
@@ -120,6 +126,9 @@ def signup():
 
 @app.route('/user_page', methods=['GET', 'POST'])
 def user_page():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     username = session['username']
 
     # Verifica se há solicitação para fechar a sala
