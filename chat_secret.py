@@ -33,6 +33,11 @@ class Message(db.Model):
 
 chat_rooms = {}
 
+with app.app_context():
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
+
 @app.route('/')
 def index():
     return render_template('index.html')
