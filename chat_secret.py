@@ -9,7 +9,7 @@ import os
 load_dotenv ()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "token")
+app.secret_key = os.getenv("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 
@@ -69,7 +69,7 @@ def chat(room_id):
 @app.route('/submit_message/<room_id>', methods=['POST'])
 def submit_message(room_id):
     if room_id not in chat_rooms:
-        return redirect(url_for(''))
+        return redirect(url_for('index'))
 
     if 'username' not in session:
         return redirect(url_for('login'))
