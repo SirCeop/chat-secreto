@@ -49,7 +49,7 @@ def create_room():
 @app.route('/chat/<room_id>', methods=['GET', 'POST'])
 def chat(room_id):
     if room_id not in chat_rooms:
-        return redirect(url_for('room'))
+        return redirect(url_for('index'))
 
     if request.method == 'POST':
         if 'username' not in session:
