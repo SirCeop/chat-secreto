@@ -31,8 +31,6 @@ class Message(db.Model):
     content = db.Column(db.String(200), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-chat_rooms = {}
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -85,6 +83,7 @@ def submit_message(room_id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -96,6 +95,8 @@ def login():
             return redirect(url_for('user_page'))
         else:
             return render_template('index.html', error='Nome de usuário ou senha incorretos. Tente novamente ou crie um novo.')
+        
+        
 
     return render_template('index.html')
 
@@ -161,4 +162,4 @@ def room():
     return render_template('room.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
