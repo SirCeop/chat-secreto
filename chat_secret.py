@@ -1,23 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, session, current_app
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import uuid
 from datetime import datetime
-from dotenv import load_dotenv
-import os
+from dotenv import load_dotenv 
+import os 
 
-load_dotenv()
+load_dotenv ()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "token")
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI", 'mysql://user:password@host/database')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.getenv("SECRET_KEY")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
 
-class User(db.Model, UserMixin):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
@@ -35,55 +31,59 @@ class Message(db.Model):
     content = db.Column(db.String(200), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+chat_rooms = {}
+
+with app.app_context():
+
+    db.create_all()
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/create_room')
-@login_required
 def create_room():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     room_id = str(uuid.uuid4())
-
-    # Adicionar a sala ao banco de dados
-    new_room = Message(room_id=room_id, username=current_user.username, content='Sala criada.')
-    db.session.add(new_room)
-    db.session.commit()
-
+    chat_rooms[room_id] = []
     return redirect(url_for('chat', room_id=room_id))
 
 @app.route('/chat/<room_id>', methods=['GET', 'POST'])
 def chat(room_id):
+    if room_id not in chat_rooms:
+        return redirect(url_for('index'))
+
     if request.method == 'POST':
-        with app.app_context():
-            if not current_user.is_authenticated:
-                return redirect(url_for('login'))
+        if 'username' not in session:
+            return redirect(url_for('login'))
 
-            username = current_user.username
-            message_content = request.form.get('message')
-
-            new_message = Message(username=username, room_id=room_id, content=message_content)
-            db.session.add(new_message)
-            db.session.commit()
-
-    with app.app_context():
-        messages = Message.query.filter_by(room_id=room_id).all()
-
-    return render_template('chat.html', room_id=room_id, messages=messages)
-
-@app.route('/submit_message/<room_id>', methods=['POST'])
-@login_required
-def submit_message(room_id):
-    with app.app_context():
-        username = current_user.username
+        username = session['username']
         message_content = request.form.get('message')
 
         new_message = Message(username=username, room_id=room_id, content=message_content)
         db.session.add(new_message)
         db.session.commit()
+
+    messages = Message.query.filter_by(room_id=room_id).all()
+
+    return render_template('chat.html', room_id=room_id, messages=messages)
+
+@app.route('/submit_message/<room_id>', methods=['POST'])
+def submit_message(room_id):
+    if room_id not in chat_rooms:
+        return redirect(url_for('index'))
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session['username']
+    message_content = request.form.get('message')
+
+    new_message = Message(username=username, room_id=room_id, content=message_content)
+    db.session.add(new_message)
+    db.session.commit()
 
     return redirect(url_for('chat', room_id=room_id))
 
@@ -165,5 +165,4 @@ def room():
     return render_template('room.html')
 
 if __name__ == '__main__':
-    db.create_all()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
